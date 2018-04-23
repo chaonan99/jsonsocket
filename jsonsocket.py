@@ -1,10 +1,13 @@
-import json, socket
+#!/usr/bin/env python
+
+import json
+import socket
+
 
 class Server(object):
   """
   A JSON socket server used to communicate with a JSON socket client. All the
   data is serialized in JSON. How to use it:
-
   server = Server(host, port)
   while True:
     server.accept()
@@ -55,7 +58,6 @@ class Client(object):
   """
   A JSON socket client used to communicate with a JSON socket server. All the
   data is serialized in JSON. How to use it:
-
   data = {
     'name': 'Patrick Jane',
     'age': 45,
@@ -101,25 +103,25 @@ class Client(object):
       self.socket = None
 
 
-## helper functions ##
-
+# helper functions
 def _send(socket, data):
   try:
     serialized = json.dumps(data)
-  except (TypeError, ValueError), e:
+  except (TypeError, ValueError) as e:
     raise Exception('You can only send JSON-serializable data')
   # send the length of the serialized data first
-  socket.send('%d\n' % len(serialized))
+  socket.send('{}\n'.format(len(serialized)).encode('utf-8'))
   # send the serialized data
-  socket.sendall(serialized)
+  socket.sendall(serialized.encode('utf-8'))
+
 
 def _recv(socket):
   # read the length of the data, letter by letter until we reach EOL
   length_str = ''
-  char = socket.recv(1)
+  char = socket.recv(1).decode('utf-8')
   while char != '\n':
     length_str += char
-    char = socket.recv(1)
+    char = socket.recv(1).decode('utf-8')
   total = int(length_str)
   # use a memoryview to receive the data chunk by chunk efficiently
   view = memoryview(bytearray(total))
@@ -128,7 +130,7 @@ def _recv(socket):
     recv_size = socket.recv_into(view[next_offset:], total - next_offset)
     next_offset += recv_size
   try:
-    deserialized = json.loads(view.tobytes())
-  except (TypeError, ValueError), e:
+    deserialized = json.loads(view.tobytes().decode())
+  except (TypeError, ValueError) as e:
     raise Exception('Data received was not in JSON format')
   return deserialized

@@ -1,7 +1,7 @@
 jsonsocket
 ==========
 
-This is a small Python library for sending data over sockets.
+This is a small Python library for sending data over sockets. The original code works on Python2 and [this pull request](https://github.com/mdebbar/jsonsocket/pull/3) add Python3 compat so we adapt it here. More examples will be added here.
 
 It allows sending lists, dictionaries, strings, etc. It can handle very large data (I've tested it with 10GB of data). Any JSON-serializable data is accepted.
 
@@ -11,7 +11,7 @@ Examples:
 from jsonsocket import Client, Server
 
 host = 'localhost'
-port = '8000'
+port = 8000
 
 # Client code:
 client = Client()
